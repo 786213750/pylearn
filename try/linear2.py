@@ -23,10 +23,10 @@ X=preprocessing.scale(X)
 X_train,X_test,Y_train,Y_test=cross_validation.train_test_split(X, Y, test_size=0.2)
 #*****old clf,now save in pickle*****
 #clf=svm.SVR(kernel='poly')
-#clf=LinearRegression()
+clf=LinearRegression()
 #clf.fit(X_train,Y_train)
-#with open ('linear.pickle','wb' ) as f:
-    #pickle.dump(clf,f)
+with open ('linear.pickle','wb' ) as f:
+    pickle.dump(clf,f)
 pickle_in = open ('linear.pickle','rb')
 clf= pickle.load(pickle_in)
 accuracy=clf.score(X_test,Y_test)

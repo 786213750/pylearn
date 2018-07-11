@@ -19,6 +19,7 @@ X=preprocessing.scale(X)
 #print(X)
 #print(Y)
 
+ 
 X_train,X_test,Y_train,Y_test=cross_validation.train_test_split(X, Y, test_size=0.2)
 #print('xtrain',X_train)
 #print('xtest',X_test)
@@ -35,15 +36,15 @@ forcast_set=clf.predict(s1)
 print(forcast_set,accuracy)
 df['Forecast']=np.nan
 last_index= df1.iloc[-1].name
-print(last_index)
+#print(last_index)
 #last_unix=last_date.timestamp()
 #print(last_unix)
-print(last_index)
+#print(last_index)
 for i in forcast_set:
     last_index+=1
     print(last_index)
     df.iloc[last_index]=[np.nan for _ in range(len(df.columns)-1)]+[i]
 
-df['d'].plot()
+df['f'].plot()
 df['Forecast'].plot()   
 plt.show()
