@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import os
 
-Train_path="C:\thomas\project tt"
+Train_path="C:\Andrew\Documents\GitHub\pylearn\project tt"
 IMG_size= 50
 s = pd.Series(list("abcdefghijklmnopqrstuvwxyz0123456789"))
 Bdict= pd.get_dummies(s)  
