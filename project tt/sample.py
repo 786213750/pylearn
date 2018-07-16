@@ -6,7 +6,7 @@ import cv2
 import os
 
 def randomString():
-    rndLetters = (random.choice(string.ascii_uppercase) for _ in range(6))
+    rndLetters = (random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(6))
     return "".join(rndLetters)
 
 for i in range(1):
