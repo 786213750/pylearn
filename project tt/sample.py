@@ -27,7 +27,7 @@ for i in range(len(contours)):
        if (w*h > 100):
            cv2.rectangle(a, (x,y), (x+w,y+h), (255,100,100), 1)
            
-path = 'C:\\Users\\Andrew\\Documents\\GitHub\\pylearn\\project tt\\images'
+path = "C:\\Users:\\Admin\\Downloads\\PortableGit\\ProjectTT\\pylearn\\project tt\\images"
 cv2.imwrite(os.path.join(path,f),a)
 
 cv2.drawContours(img,contours,-1,(155,155,255),1)

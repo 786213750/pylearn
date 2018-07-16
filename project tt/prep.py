@@ -5,14 +5,18 @@ import pandas as pd
 import numpy as np
 import os
 
-Train_path="C:\thomas\project tt"
+Train_path="C:\\Users:\\Admin\\Downloads\\PortableGit\\ProjectTT\\pylearn\\project tt\\images"
 IMG_size= 50
 s = pd.Series(list("abcdefghijklmnopqrstuvwxyz0123456789"))
+#print(s)
 Bdict= pd.get_dummies(s)  
+
 #print(Bdict)
 Idict={}
 for i in range(len(s)):
     Idict[s[i]]=np.array(Bdict.ix[i,:])
+    
+#print(Idict)
 #print(Idict)
 #
 def create_train_data():
