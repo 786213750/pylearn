@@ -25,7 +25,7 @@ def exit():
     sys.exit()
 
 def tryImWrite(String,img,i):
-    if (not os.path.isfile(os.path.join(path,String+"."+i+'.png'))):
+    if (not os.path.isfile(os.path.join(path,String+i+'.png'))):
         cv2.imwrite(os.path.join(path,String+"."+i+'.png'),img)
     else:
         tryImWrite(String,img,str(int(i)+1))
