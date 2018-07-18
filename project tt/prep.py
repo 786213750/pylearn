@@ -5,7 +5,10 @@ import pandas as pd
 import numpy as np
 import os
 ##import image path for nn
+import sys
 
+print 'sys.argv[0] =', sys.argv[0]             
+pathname = os.path.dirname(sys.argv[0])
 
 Train_path="C:\\github\\pylearn\\project tt\\imgine_train"
 Test_path="C:\\github\\pylearn\\project tt\\imgine_test"
@@ -49,7 +52,7 @@ def create_test_data():
     return(test_data)
 create_test_data()
 
-
+batch_size = 128
 n_classes = 62
 x = tf.placeholder('float', [None, 250])
 y = tf.placeholder(tf.float32, [None, n_classes])
@@ -90,4 +93,28 @@ def convolutional_neural_network(x):#, keep_rate):
     output = tf.matmul(fc, weights['out']) + biases['out']
     return output
 
-prediction = convolutional_neural_network(x)
+
+def train_neural_network(x):
+    prediction = convolutional_neural_network(x)
+    cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(logits = prediction,lable = y) )
+    optimizer = tf.train.AdamOptimizer().minimize(cost)
+    
+    hm_epochs = 10
+    with tf.Session() as sess:
+        sess.run(tf.initialize_all_variables())
+
+        for epoch in range(hm_epochs):
+            epoch_loss = 0
+            for _ in range(int(os.list.dir(Train_path)/batch_size)):
+                epoch_x, epoch_y = mnist.train.next_batch(batch_size)
+                _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
+                epoch_loss += c
+
+            print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
+
+        correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
+
+        accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
+        print('Accuracy:',accuracy.eval({x:mnist.test.images, y:mnist.test.labels}))
+
+train_neural_network(x)
