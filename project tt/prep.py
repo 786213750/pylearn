@@ -4,8 +4,10 @@ from random import shuffle
 import pandas as pd
 import numpy as np
 import os
-##import image path for nn
-Train_path="c:\\thomas\\project tt\\t1"
+
+
+Train_path="C:\Andrew\Documents\GitHub\pylearn\project tt"
+
 IMG_size= 50
 ## set up for dict
 s = pd.Series(list("abcdefghijklmnopqrstuvwxyz0123456789"+"abcdefghijklmnopqrstuvwxyz".upper()))
