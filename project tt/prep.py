@@ -13,7 +13,7 @@ from tflearn.layers.estimator import regression
 
 Train_path="C:\\github\\pylearn\\project tt\\images_train"
 Test_path="C:\\github\\pylearn\\project tt\\images_test"
-IMG_SIZE= 50
+IMG_size= 50
 LR = 1e-3
 
 MODEL_NAME = 'Captcha-{}-{}.model'.format(LR, '2conv-basic')
@@ -29,7 +29,7 @@ Idict={}
 ## create one hot label dict
 for i in range(len(s)):
     Idict[s[i]]=np.array(Bdict.ix[i,:])
-#print(Idict)
+#print(len(Idict))
 ## create the training dataset
 
 
@@ -40,7 +40,7 @@ def create_train_data():
         word_label= img.split('.')[0]
         label= Idict[word_label]
         path = os.path.join(Train_path,img)
-        img =cv2.resize(cv2.imread(path),(IMG_size,IMG_size))
+        img =cv2.resize(cv2.imread(path,cv2.IMREAD_GRAYSCALE),(IMG_size,IMG_size))
         training_data.append([np.array(img),np.array(label)])
     shuffle(training_data)
     np.save('train_data.npy',training_data)
@@ -52,7 +52,8 @@ def create_test_data():
     for img in os.listdir(Test_path):
         word_label= img.split('.')[0]
         path = os.path.join(Test_path,img)
-        img =cv2.resize(cv2.imread(path),(IMG_size,IMG_size))
+        label= Idict[word_label]
+        img =cv2.resize(cv2.imread(path,cv2.IMREAD_GRAYSCALE),(IMG_size,IMG_size))
         test_data.append([np.array(img),np.array(label)])
     shuffle(test_data)
     np.save('test_data.npy',test_data)
@@ -60,7 +61,7 @@ def create_test_data():
 test = create_test_data()
 
 
-convnet = input_data(shape=[None, IMG_SIZE, IMG_SIZE, 1], name='input')
+convnet = input_data(shape=[None, IMG_size, IMG_size, 1], name='input')
 
 convnet = conv_2d(convnet, 32, 5, activation='relu')
 convnet = max_pool_2d(convnet, 5)
@@ -68,10 +69,19 @@ convnet = max_pool_2d(convnet, 5)
 convnet = conv_2d(convnet, 64, 5, activation='relu')
 convnet = max_pool_2d(convnet, 5)
 
+convnet = conv_2d(convnet, 128, 5, activation='relu')
+convnet = max_pool_2d(convnet, 5)
+
+convnet = conv_2d(convnet, 64, 5, activation='relu')
+convnet = max_pool_2d(convnet, 5)
+
+convnet = conv_2d(convnet, 32, 5, activation='relu')
+convnet = max_pool_2d(convnet, 5)
+
 convnet = fully_connected(convnet, 1024, activation='relu')
 convnet = dropout(convnet, 0.8)
 
-convnet = fully_connected(convnet, 2, activation='softmax')
+convnet = fully_connected(convnet, 62, activation='softmax')
 convnet = regression(convnet, optimizer='adam', learning_rate=LR, loss='categorical_crossentropy', name='targets')
 
 model = tflearn.DNN(convnet, tensorboard_dir='log')
@@ -81,11 +91,12 @@ if os.path.exists('{}.meta'.format(MODEL_NAME)):
     print('model loaded!')
 
 
-X = np.array([i[0] for i in train]).reshape(-1,IMG_SIZE,IMG_SIZE,1)
+X = np.array([i[0] for i in train]).reshape(-1,IMG_size,IMG_size,1)
 Y = [i[1] for i in train]
 
-test_x = np.array([i[0] for i in test]).reshape(-1,IMG_SIZE,IMG_SIZE,1)
+
+test_x = np.array([i[0] for i in test]).reshape(-1,IMG_size,IMG_size,1)
 test_y = [i[1] for i in test]
 
-model.fit({'input': X}, {'targets': Y}, n_epoch=3, validation_set=({'input': test_x}, {'targets': test_y}), 
+model.fit({'input': X}, {'targets': Y}, n_epoch=10, validation_set=({'input': test_x}, {'targets': test_y}), 
     snapshot_step=500, show_metric=True, run_id=MODEL_NAME)

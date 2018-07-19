@@ -8,11 +8,11 @@ import sys
 
 # Global variables
 
-CharInCaptcha = 6
+CharInCaptcha = 5
 contours2 = []
 num_array = []
 pathname = os.path.dirname(sys.argv[0])
-path = pathname + "\\image_train"
+path = pathname + "\\images_train"
 
 #path = 'C:\\Users\\Andrew\\Documents\\GitHub\\pylearn\\project tt\\images'
 
@@ -34,7 +34,7 @@ def tryImWrite(String,img,i):
         tryImWrite(String,img,str(int(i)+1))
         
 #Main
-for _ in range(200):
+for _ in range(300):
     #Create Captcha and write to Images Folder
     for i in range(1):
         String = randomString() 
@@ -89,7 +89,7 @@ for _ in range(200):
                     
     os.remove(os.path.join(path,StringName))
     contours2 = []
-    numarray = []
+    num_array = []
 
 #Temporary code
 
