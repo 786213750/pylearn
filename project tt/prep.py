@@ -7,11 +7,10 @@ import os
 ##import image path for nn
 import sys
 
-print 'sys.argv[0] =', sys.argv[0]             
 pathname = os.path.dirname(sys.argv[0])
+Train_path = pathname + "\\image_train"
+Test_path = pathname + "\\image_test"
 
-Train_path="C:\\github\\pylearn\\project tt\\imgine_train"
-Test_path="C:\\github\\pylearn\\project tt\\imgine_test"
 IMG_size= 50
 ## set up for dict
 s = pd.Series(list("abcdefghijklmnopqrstuvwxyz0123456789"+"abcdefghijklmnopqrstuvwxyz".upper()))
@@ -117,4 +116,5 @@ def train_neural_network(x):
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
         print('Accuracy:',accuracy.eval({x:mnist.test.images, y:mnist.test.labels}))
 
+#Testing Commit
 train_neural_network(x)
