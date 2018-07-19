@@ -12,7 +12,7 @@ CharInCaptcha = 6
 contours2 = []
 num_array = []
 pathname = os.path.dirname(sys.argv[0])
-path = pathname + "\\images"
+path = pathname + "\\image_train"
 
 #path = 'C:\\Users\\Andrew\\Documents\\GitHub\\pylearn\\project tt\\images'
 
