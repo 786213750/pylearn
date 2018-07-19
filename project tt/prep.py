@@ -4,14 +4,22 @@ from random import shuffle
 import pandas as pd
 import numpy as np
 import os
+import tflearn
+from tflearn.layers.conv import conv_2d, max_pool_2d
+from tflearn.layers.core import input_data, dropout, fully_connected
+from tflearn.layers.estimator import regression
 ##import image path for nn
-import sys
 
-pathname = os.path.dirname(sys.argv[0])
-Train_path = pathname + "\\image_train"
-Test_path = pathname + "\\image_test"
 
-IMG_size= 50
+Train_path="C:\\github\\pylearn\\project tt\\images_train"
+Test_path="C:\\github\\pylearn\\project tt\\images_test"
+IMG_SIZE= 50
+LR = 1e-3
+
+MODEL_NAME = 'Captcha-{}-{}.model'.format(LR, '2conv-basic')
+
+
+
 ## set up for dict
 s = pd.Series(list("abcdefghijklmnopqrstuvwxyz0123456789"+"abcdefghijklmnopqrstuvwxyz".upper()))
 ##create base one hot array
@@ -37,7 +45,7 @@ def create_train_data():
     shuffle(training_data)
     np.save('train_data.npy',training_data)
     return(training_data)
-create_train_data()
+train = create_train_data()
 
 def create_test_data():
     test_data=[]
@@ -49,72 +57,35 @@ def create_test_data():
     shuffle(test_data)
     np.save('test_data.npy',test_data)
     return(test_data)
-create_test_data()
-
-batch_size = 128
-n_classes = 62
-x = tf.placeholder('float', [None, 250])
-y = tf.placeholder(tf.float32, [None, n_classes])
+test = create_test_data()
 
 
+convnet = input_data(shape=[None, IMG_SIZE, IMG_SIZE, 1], name='input')
 
-def conv2d(x, W):
-    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
+convnet = conv_2d(convnet, 32, 5, activation='relu')
+convnet = max_pool_2d(convnet, 5)
 
-def maxpool2d(x):
-    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+convnet = conv_2d(convnet, 64, 5, activation='relu')
+convnet = max_pool_2d(convnet, 5)
 
+convnet = fully_connected(convnet, 1024, activation='relu')
+convnet = dropout(convnet, 0.8)
 
-def convolutional_neural_network(x):#, keep_rate):
-    weights = {
-        'W_conv1': tf.Variable(tf.random_normal([5, 5, 1, 32])),
-        'W_conv2': tf.Variable(tf.random_normal([5, 5, 32, 64])),
-        'W_fc': tf.Variable(tf.random_normal([12*12*64, 1024])),
-        'out': tf.Variable(tf.random_normal([1024, n_classes]))
-    }
+convnet = fully_connected(convnet, 2, activation='softmax')
+convnet = regression(convnet, optimizer='adam', learning_rate=LR, loss='categorical_crossentropy', name='targets')
 
-    biases = {
-        'b_conv1': tf.Variable(tf.random_normal([32])),
-        'b_conv2': tf.Variable(tf.random_normal([64])),
-        'b_fc': tf.Variable(tf.random_normal([1024])),
-        'out': tf.Variable(tf.random_normal([n_classes]))
-    }
+model = tflearn.DNN(convnet, tensorboard_dir='log')
 
-    x = tf.reshape(x, shape=[-1, 48, 48, 1])
-    conv1 = tf.nn.relu(conv2d(x, weights['W_conv1']) + biases['b_conv1'])
-    conv1 = maxpool2d(conv1)
-    conv2 = tf.nn.relu(conv2d(conv1, weights['W_conv2']) + biases['b_conv2'])
-    conv2 = maxpool2d(conv2)
-
-    fc = tf.reshape(conv2, [-1, 12*12*64])
-    fc = tf.nn.relu(tf.matmul(fc, weights['W_fc']) + biases['b_fc'])
-
-    output = tf.matmul(fc, weights['out']) + biases['out']
-    return output
+if os.path.exists('{}.meta'.format(MODEL_NAME)):
+    model.load(MODEL_NAME)
+    print('model loaded!')
 
 
-def train_neural_network(x):
-    prediction = convolutional_neural_network(x)
-    cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(logits = prediction,lable = y) )
-    optimizer = tf.train.AdamOptimizer().minimize(cost)
-    
-    hm_epochs = 10
-    with tf.Session() as sess:
-        sess.run(tf.initialize_all_variables())
+X = np.array([i[0] for i in train]).reshape(-1,IMG_SIZE,IMG_SIZE,1)
+Y = [i[1] for i in train]
 
-        for epoch in range(hm_epochs):
-            epoch_loss = 0
-            for _ in range(int(os.list.dir(Train_path)/batch_size)):
-                epoch_x, epoch_y = mnist.train.next_batch(batch_size)
-                _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
-                epoch_loss += c
+test_x = np.array([i[0] for i in test]).reshape(-1,IMG_SIZE,IMG_SIZE,1)
+test_y = [i[1] for i in test]
 
-            print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
-
-        correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
-
-        accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-        print('Accuracy:',accuracy.eval({x:mnist.test.images, y:mnist.test.labels}))
-
-#Testing Commit again
-train_neural_network(x)
+model.fit({'input': X}, {'targets': Y}, n_epoch=3, validation_set=({'input': test_x}, {'targets': test_y}), 
+    snapshot_step=500, show_metric=True, run_id=MODEL_NAME)
