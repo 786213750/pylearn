@@ -9,10 +9,10 @@ from tflearn.layers.conv import conv_2d, max_pool_2d
 from tflearn.layers.core import input_data, dropout, fully_connected
 from tflearn.layers.estimator import regression
 ##import image path for nn
+pathname = os.path.dirname(sys.argv[0])
+Train_path = pathname + "\\images_train"
+Test_path = pathname +"\\images_test"
 
-
-Train_path="C:\\github\\pylearn\\project tt\\images_train"
-Test_path="C:\\github\\pylearn\\project tt\\images_test"
 IMG_size= 50
 LR = 1e-3
 
@@ -100,3 +100,5 @@ test_y = [i[1] for i in test]
 
 model.fit({'input': X}, {'targets': Y}, n_epoch=10, validation_set=({'input': test_x}, {'targets': test_y}), 
     snapshot_step=500, show_metric=True, run_id=MODEL_NAME)
+
+model.save(MODEL_NAME)
