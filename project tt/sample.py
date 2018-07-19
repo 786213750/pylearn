@@ -34,7 +34,7 @@ def tryImWrite(String,img,i):
         tryImWrite(String,img,str(int(i)+1))
         
 #Main
-for _ in range(300):
+for _ in range(1000):
     #Create Captcha and write to Images Folder
     for i in range(1):
         String = randomString() 
@@ -67,7 +67,7 @@ for _ in range(300):
         for i in range(len(contours2)):
             (_,_,w,_) = cv2.boundingRect(contours2[i])
             if (w > 40):
-                exit()
+                continue
 
         #Create subImages for each character and write to seperate files.
         #For repeated characters,first character represents character shown
