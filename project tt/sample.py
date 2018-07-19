@@ -11,7 +11,10 @@ import sys
 CharInCaptcha = 6
 contours2 = []
 num_array = []
-path = 'C:\\Users\\Andrew\\Documents\\GitHub\\pylearn\\project tt\\images'
+pathname = os.path.dirname(sys.argv[0])
+path = pathname + "\\images"
+
+#path = 'C:\\Users\\Andrew\\Documents\\GitHub\\pylearn\\project tt\\images'
 
 #Functions
 
@@ -25,64 +28,68 @@ def exit():
     sys.exit()
 
 def tryImWrite(String,img,i):
-    if (not os.path.isfile(os.path.join(path,String+i+'.png'))):
+    if (not os.path.isfile(os.path.join(path,String+'.'+i+'.png'))):
         cv2.imwrite(os.path.join(path,String+"."+i+'.png'),img)
     else:
         tryImWrite(String,img,str(int(i)+1))
         
 #Main
+for _ in range(200):
+    #Create Captcha and write to Images Folder
+    for i in range(1):
+        String = randomString() 
+        StringName = (String + '.png')
+        c = Claptcha(String, "FreeMono.ttf",noise = 0.0)
+        text, _ = c.write(os.path.join(path,StringName))
 
-#Create Captcha and write to Images Folder
-for i in range(1):
-    String = randomString() 
-    StringName = (String + '.png')
-    c = Claptcha(String, "FreeMono.ttf",noise = 0.0)
-    text, _ = c.write(os.path.join(path,StringName))
+    #Create Threshold Image, process contours, create ReturnImage
+    thresh,img = cv2.threshold(cv2.imread(os.path.join(path,StringName),cv2.IMREAD_GRAYSCALE),250,300,cv2.THRESH_BINARY)
 
-#Create Threshold Image, process contours, create ReturnImage
-thresh,img = cv2.threshold(cv2.imread(os.path.join(path,StringName),cv2.IMREAD_GRAYSCALE),250,300,cv2.THRESH_BINARY)
+    im2,contours,hierarchy = cv2.findContours(img,cv2.RETR_CCOMP,cv2.CHAIN_APPROX_SIMPLE)
 
-im2,contours,hierarchy = cv2.findContours(img,cv2.RETR_CCOMP,cv2.CHAIN_APPROX_SIMPLE)
+    returnImage = cv2.imread(os.path.join(path,StringName))
 
-returnImage = cv2.imread(os.path.join(path,StringName))
+    #save proper contours into contours2
+    #(eliminate contours within contours problem)
+    for i in range(len(contours)):
+        if(hierarchy[0,i,3] != -1):
+           (x,y,w,h) = cv2.boundingRect(contours[i])
+           if (w*h > 100 and w < 100):
+               #cv2.rectangle(a, (x,y), (x+w,y+h), (255,100,100), 1)
+               contours2.insert(i,contours[i])
+    b = True
+    #Exception checker
+    if ( CharInCaptcha < len(contours2)):
+        #exit()
+        b = False
+        print(b)
+    if (b):
+        for i in range(len(contours2)):
+            (_,_,w,_) = cv2.boundingRect(contours2[i])
+            if (w > 40):
+                exit()
 
-#save proper contours into contours2
-#(eliminate contours within contours problem)
-for i in range(len(contours)):
-    if(hierarchy[0,i,3] != -1):
-       (x,y,w,h) = cv2.boundingRect(contours[i])
-       if (w*h > 100 and w < 100):
-           #cv2.rectangle(a, (x,y), (x+w,y+h), (255,100,100), 1)
-           contours2.insert(i,contours[i])
+        #Create subImages for each character and write to seperate files.
+        #For repeated characters,first character represents character shown
+        #Second character and after represents the number of the same character
 
-#Exception checker
-if ( CharInCaptcha < len(contours2)):
-    exit()
-
-for i in range(len(contours2)):
-    (_,_,w,_) = cv2.boundingRect(contours2[i])
-    if (w > 40):
-        exit()
-
-#Create subImages for each character and write to seperate files.
-#For repeated characters,first character represents character shown
-#Second character and after represents the number of the same character
-
-for i in range(len(contours2)):
-    (x,y,w,h) = cv2.boundingRect(contours2[i])
-    num_array.insert(i,x)
-    
-num_array.sort()
-
-for i in range(len(contours2)):
-    for j in range(len(contours2)):
-        (x_val,_,_,_) = cv2.boundingRect(contours2[j])
-        if (num_array[i] == x_val):
-            (x,y,w,h) = cv2.boundingRect(contours2[j])
-            cropped_RI = returnImage[y:y+h,x:x+w]
-            tryImWrite(String[i],cropped_RI,'0')
+        for i in range(len(contours2)):
+            (x,y,w,h) = cv2.boundingRect(contours2[i])
+            num_array.insert(i,x)
             
-os.remove(os.path.join(path,StringName))
+        num_array.sort()
+
+        for i in range(len(contours2)):
+            for j in range(len(contours2)):
+                (x_val,_,_,_) = cv2.boundingRect(contours2[j])
+                if (num_array[i] == x_val):
+                    (x,y,w,h) = cv2.boundingRect(contours2[j])
+                    cropped_RI = returnImage[y:y+h,x:x+w]
+                    tryImWrite(String[i],cropped_RI,'0')
+                    
+    os.remove(os.path.join(path,StringName))
+    contours2 = []
+    numarray = []
 
 #Temporary code
 
