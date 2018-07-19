@@ -116,5 +116,5 @@ def train_neural_network(x):
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
         print('Accuracy:',accuracy.eval({x:mnist.test.images, y:mnist.test.labels}))
 
-#Testing Commit
+#Testing Commit again
 train_neural_network(x)
