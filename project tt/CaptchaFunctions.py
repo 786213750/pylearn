@@ -6,12 +6,6 @@ import cv2
 import os
 import sys
 
-# Global variables
-
-CharInCaptcha = 5
-pathname = os.path.dirname(sys.argv[0])
-path = pathname + "\\images"
-
 #class
 
 class Continue1(Exception):
@@ -19,11 +13,12 @@ class Continue1(Exception):
 
 #Functions
 
-def randomString():
+def randomString(CharInCaptcha):
     rndLetters = (random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(CharInCaptcha))
     return "".join(rndLetters)
 
-def tryImWrite(String,img,i):
+def tryImWrite(String,img,path):
+    i='0'
     while (os.path.isfile(os.path.join(path,String+'.'+i+'.png'))):
         i = str(int(i)+1)
     else:
@@ -31,7 +26,7 @@ def tryImWrite(String,img,i):
         
 
 #Create Threshold Image, process contours, create ReturnImage
-def ImageCreate(StringName):
+def ImageCreate(StringName,path):
     
     thresh,img = cv2.threshold(cv2.imread(os.path.join(path,StringName),cv2.IMREAD_GRAYSCALE),250,300,cv2.THRESH_BINARY)
     
@@ -53,11 +48,11 @@ def elimContours(contours,contours2,hierarchy):
 #Create subImages for each character and write to seperate files.
 #For repeated characters,first character represents character shown
 #Second character and after represents the number of the same character
-def cropContours(contours2,num_array,String,returnImage):
+def cropContours(contours2,num_array,String,returnImage,path):
     for i in range(len(contours2)):
         (x,y,w,h) = cv2.boundingRect(contours2[i])
         num_array.insert(i,x)
-        
+    returnlist = []    
     num_array.sort()
     for i in range(len(contours2)):
         for j in range(len(contours2)):
@@ -65,49 +60,21 @@ def cropContours(contours2,num_array,String,returnImage):
             if (num_array[i] == x_val):
                 (x,y,w,h) = cv2.boundingRect(contours2[j])
                 cropped_RI = returnImage[y:y+h,x:x+w]
-                tryImWrite(String[i],cropped_RI,'0')
+                returnlist.append(cropped_RI)
+    return returnlist
 
-
-#Main
-for _ in range(100):
-    #Create Captcha and write to Images Folder
-    contours2 = []
-    num_array = []
-    String = randomString() 
-    StringName = (String + '.png')
-    c = Claptcha(String, "FreeMono.ttf",noise = 0.0)
-    text, _ = c.write(os.path.join(path,StringName))
-    
-    contours,hierarchy,returnImage = ImageCreate(StringName)
-    elimContours(contours,contours2,hierarchy)
-    
-    #Exception checker
-    if ( CharInCaptcha < len(contours2)):
-        os.remove(os.path.join(path,StringName))
-        continue
-
-    try:
-        for i in range(len(contours2)):
-            (_,_,w,_) = cv2.boundingRect(contours2[i])
-            if (w > 40):
-                os.remove(os.path.join(path,StringName))
-                print('lol')
-                raise Continue1
-    except Continue1:
-        continue
-
-    cropContours(contours2,num_array,String,returnImage)           
-    os.remove(os.path.join(path,StringName))
-
+def writeImages(listofImages,String,path):
+    for i in range(len(listofImages)):
+        gg=1
+        tryImWrite(String[i],listofImages[i],path)
 
 #Temporary code
 
-#cv2.imwrite(os.path.join(path,StringName),a)
-
-#cv2.drawContours(img,contours,-1,(155,155,255),1)
+#cv2.drawContours(returnImage,contours,-1,(155,155,255),1)
 #cv2.namedWindow('Display',cv2.WINDOW_NORMAL)
-#cv2.imshow('Display',a)
+#cv2.imshow('Display',returnImage)
 #cv2.waitKey()
+
 
 
 ##for i in range(len(contours)):
