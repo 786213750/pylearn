@@ -22,7 +22,9 @@ MODEL_NAME = 'Captcha-{}-{}.model'.format(LR, '2conv-basic')
 
 
 ## set up for dict
-s = pd.Series(list("abcdefghijklmnopqrstuvwxyz0123456789"+"abcdefghijklmnopqrstuvwxyz".upper()))
+base_s =list("0123456789"+"abcdefghijklmnopqrstuvwxyz".upper()+"abcdefghijklmnopqrstuvwxyz")
+s = pd.Series(base_s)
+
 ##create base one hot array
 Bdict= pd.get_dummies(s)  
 #print(Bdict)
@@ -98,8 +100,21 @@ Y = [i[1] for i in train]
 
 test_x = np.array([i[0] for i in test]).reshape(-1,IMG_size,IMG_size,1)
 test_y = [i[1] for i in test]
+def train_model(X,Y,test_x,test_y):
+    model.fit({'input': X}, {'targets': Y}, n_epoch=10, validation_set=({'input': test_x}, {'targets': test_y}), 
+              snapshot_step=500, show_metric=True, run_id=MODEL_NAME)
+    model.save(MODEL_NAME)
 
-model.fit({'input': X}, {'targets': Y}, n_epoch=10, validation_set=({'input': test_x}, {'targets': test_y}), 
-    snapshot_step=500, show_metric=True, run_id=MODEL_NAME)
-
-model.save(MODEL_NAME)
+def predict_model(X):
+    word=[]
+    Y=(model.predict(X))
+    for i in Y:
+        word.append(base_s[np.where(i==max(i))[0][0]])
+    return "".join(word)
+Train=[]
+for img in os.listdir(Train_path):
+    path = os.path.join(Train_path,img)
+    img =cv2.resize(cv2.imread(path,cv2.IMREAD_GRAYSCALE),(IMG_size,IMG_size))
+    Train.append(img)
+X = np.array([i[0] for i in train]).reshape(-1,IMG_size,IMG_size,1)    
+print(predict_model(X))
