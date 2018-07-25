@@ -2,6 +2,8 @@ import os
 import sys
 import cv2
 import CaptchaFunctions
+import prep
+import numpy as np
 
 #global variables
 
@@ -32,5 +34,13 @@ for i in range(len(contours2)):
         exit
 
 listofletters = CaptchaFunctions.cropContours(contours2,num_array,String,returnImage,path)
+listofletters2 = []
 
-CaptchaFunctions.writeImages(listofletters,String,path)
+for i in range(len(listofletters)):
+    img = cv2.resize(listofletters[i],(prep.IMG_size,prep.IMG_size))
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    listofletters2.append([img])
+X = np.array([i[0] for i in listofletters2]).reshape(-1,prep.IMG_size,prep.IMG_size,1)      
+#CaptchaFunctions.writeImages(listofletters,String,path)
+
+print(prep.predict_model(X))
