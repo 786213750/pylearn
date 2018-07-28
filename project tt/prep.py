@@ -27,16 +27,14 @@ s = pd.Series(base_s)
 
 ##create base one hot array
 Bdict= pd.get_dummies(s)  
-#print(Bdict)
+
 Idict={}
 ## create one hot label dict
 for i in range(len(s)):
     Idict[s[i]]=np.array(Bdict.ix[i,:])
-#print(len(Idict))
+
+
 ## create the training dataset
-
-
-
 def create_train_data():
     training_data=[]
     for img in os.listdir(Train_path):
@@ -63,7 +61,7 @@ def create_test_data():
     return(test_data)
 #test = create_test_data()
 
-
+#the CNN model
 convnet = input_data(shape=[None, IMG_size, IMG_size, 1], name='input')
 
 convnet = conv_2d(convnet, 32, 5, activation='relu')
@@ -89,6 +87,7 @@ convnet = regression(convnet, optimizer='adam', learning_rate=LR, loss='categori
 
 model = tflearn.DNN(convnet, tensorboard_dir='log')
 
+#save the model
 if os.path.exists('{}.meta'.format(MODEL_NAME)):
     model.load(MODEL_NAME)
     print('model loaded!')
@@ -100,17 +99,21 @@ if os.path.exists('{}.meta'.format(MODEL_NAME)):
 
 #test_x = np.array([i[0] for i in test]).reshape(-1,IMG_size,IMG_size,1)
 #test_y = [i[1] for i in test]
+
+#train the model
 def train_model(X,Y,test_x,test_y):
     model.fit({'input': X}, {'targets': Y}, n_epoch=10, validation_set=({'input': test_x}, {'targets': test_y}), 
               snapshot_step=500, show_metric=True, run_id=MODEL_NAME)
     model.save(MODEL_NAME)
-
+#use the already build model
 def predict_model(X):
     word=[]
     Y=(model.predict(X))
     for i in Y:
         word.append(base_s[np.where(i==max(i))[0][0]])
     return "".join(word)
+
+
 ##Train=[]
 ##for img in os.listdir(Train_path):
 ##    path = os.path.join(Train_path,img)
