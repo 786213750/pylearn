@@ -68,6 +68,16 @@ def writeImages(listofImages,String,path):
         gg=1
         tryImWrite(String[i],listofImages[i],path)
 
+def writeImages2(listofImages,String,path):
+    for i in range(len(listofImages)):
+        tryImWrite(String[i],listofImages[i],trypath(path + "\\" + String[i]))
+
+def trypath(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path    
+       
+
 #Temporary code
 
 #cv2.drawContours(returnImage,contours,-1,(155,155,255),1)
@@ -76,18 +86,4 @@ def writeImages(listofImages,String,path):
 #cv2.waitKey()
 
 
-
-##for i in range(len(contours)):
-##    if(hierarchy[0,i,3] != -1):
-##        for j in range(len(contours) -1):
-##            (x1,y1,w1,h1) = cv2.boundingRect(contours[i])
-##            (x2,y2,w2,h2) = cv2.boundingRect(contours[j])
-##            if (x1 > x2 and w1 < w2):
-##                Y1,Y2 = y1,y1+h1
 ##                if (y2 < y1):
-##                    Y1 = y2
-##                if (y2+h2 > y1+h1):
-##                    Y2 = y2+h2
-##                #cv2.rectangle(a, (x2,Y1), (x2+w2,Y2), (255,100,100), 1)
-##            #else:
-##                #cv2.rectangle(a, (x1,y1), (x1+w1,y1+h1), (255,100,100), 1)

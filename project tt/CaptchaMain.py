@@ -12,7 +12,7 @@ path = pathname + "\\images"
 
 #Main
 
-for _ in range(3):
+for _ in range(300):
     #Create Captcha and write to Images Folder
     contours2 = []
     num_array = []
@@ -39,6 +39,7 @@ for _ in range(3):
     except CaptchaFunctions.Continue1:
         continue
 
-    CaptchaFunctions.writeImages(CaptchaFunctions.cropContours(contours2,num_array,String,returnImage,path),String,path)           
+    #CaptchaFunctions.writeImages(CaptchaFunctions.cropContours(contours2,num_array,String,returnImage,path),String,path)
+    CaptchaFunctions.writeImages2(CaptchaFunctions.cropContours(contours2,num_array,String,returnImage,path),String,path)
     os.remove(os.path.join(path,StringName))
     
