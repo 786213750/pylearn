@@ -70,7 +70,11 @@ def writeImages(listofImages,String,path):
 
 def writeImages2(listofImages,String,path):
     for i in range(len(listofImages)):
-        tryImWrite(String[i],listofImages[i],trypath(path + "\\" + String[i]))
+        if String[i].isupper():
+            s = String[i] + "_up"
+            tryImWrite(String[i],listofImages[i],trypath(path + "\\" + s))
+        else:
+            tryImWrite(String[i],listofImages[i],trypath(path + "\\" + String[i]))
 
 def trypath(path):
     if not os.path.exists(path):
@@ -86,4 +90,3 @@ def trypath(path):
 #cv2.waitKey()
 
 
-##                if (y2 < y1):
