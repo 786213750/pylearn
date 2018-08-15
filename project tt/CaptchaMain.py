@@ -7,12 +7,12 @@ from claptcha import Claptcha
 # Global variables
 
 CharInCaptcha = 5
-pathname = "C:\\object-detection-darkflow-master"
+pathname = os.path.dirname(__file__)
 path = pathname + "\\images"
 
 #Main
 
-for _ in range(1000):
+for _ in range(1):
     #Create Captcha and write to Images Folder
     contours2 = []
     num_array = []
@@ -39,7 +39,7 @@ for _ in range(1000):
     except CaptchaFunctions.Continue1:
         continue
 
-    #CaptchaFunctions.writeImages(CaptchaFunctions.cropContours(contours2,num_array,String,returnImage,path),String,path)
-    CaptchaFunctions.writeImages2(CaptchaFunctions.cropContours(contours2,num_array,String,returnImage,path),String,path)
+    CaptchaFunctions.writeImages(CaptchaFunctions.cropContours(contours2,num_array,String,returnImage,path),String,path)
+    #CaptchaFunctions.writeImages2(CaptchaFunctions.cropContours(contours2,num_array,String,returnImage,path),String,path)
     os.remove(os.path.join(path,StringName))
     

@@ -4,16 +4,16 @@ from lxml import etree
 import xml.etree.cElementTree as ET
 
 
-def write_xml(folder, img, objects, tl, br, savedir):
+def write_xml(folder, img, name, objects, tl, br, savedir):
     if not os.path.isdir(savedir):
         os.mkdir(savedir)
 
-    image = cv2.imread(img.path)
+    image = cv2.imread(img)
     height, width, depth = image.shape
 
     annotation = ET.Element('annotation')
     ET.SubElement(annotation, 'folder').text = folder
-    ET.SubElement(annotation, 'filename').text = img.name
+    ET.SubElement(annotation, 'filename').text = name
     ET.SubElement(annotation, 'segmented').text = '0'
     size = ET.SubElement(annotation, 'size')
     ET.SubElement(size, 'width').text = str(width)
@@ -34,7 +34,7 @@ def write_xml(folder, img, objects, tl, br, savedir):
     xml_str = ET.tostring(annotation)
     root = etree.fromstring(xml_str)
     xml_str = etree.tostring(root, pretty_print=True)
-    save_path = os.path.join(savedir, img.name.replace('png', 'xml'))
+    save_path = os.path.join(savedir, name + '.xml')
     with open(save_path, 'wb') as temp_xml:
         temp_xml.write(xml_str)
 

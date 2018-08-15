@@ -5,6 +5,7 @@ from claptcha import Claptcha
 import cv2
 import os
 import sys
+import Createxml
 
 #class
 
@@ -23,7 +24,8 @@ def tryImWrite(String,img,path):
         i = str(int(i)+1)
     else:
         cv2.imwrite(os.path.join(path,String+"."+i+'.png'),img)
-        
+        return os.path.join(path,String+"."+i+'.png'),String+"."+i
+     
 
 #Create Threshold Image, process contours, create ReturnImage
 def ImageCreate(StringName,path):
@@ -65,8 +67,11 @@ def cropContours(contours2,num_array,String,returnImage,path):
 
 def writeImages(listofImages,String,path):
     for i in range(len(listofImages)):
-        gg=1
-        tryImWrite(String[i],listofImages[i],path)
+        s,name = tryImWrite(String[i],listofImages[i],path)
+        Createxml.write_xml(path,s,name,[String[i]],[(0,0)],[(10,10)],trypath(os.path.dirname(path) + "\\xml"))
+
+
+
 
 def writeImages2(listofImages,String,path):
     for i in range(len(listofImages)):
