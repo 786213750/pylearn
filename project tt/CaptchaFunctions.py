@@ -24,7 +24,7 @@ def tryImWrite(String,img,path):
         i = str(int(i)+1)
     else:
         cv2.imwrite(os.path.join(path,String+"."+i+'.png'),img)
-        return os.path.join(path,String+"."+i+'.png'),String+"."+i
+        return os.path.join(path,String+"."+i+'.png'),String+"."+i+'.png'
      
 
 #Create Threshold Image, process contours, create ReturnImage
