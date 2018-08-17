@@ -65,29 +65,47 @@ def cropContours(contours2,num_array,String,returnImage,path):
                 returnlist.append(cropped_RI)
     return returnlist
 
+def returncoords(contours2,num_array,String,returnImage,path):
+    for i in range(len(contours2)):
+        (x,y,w,h) = cv2.boundingRect(contours2[i])
+        num_array.insert(i,x)
+    returnlist = []    
+    num_array.sort()
+    for i in range(len(contours2)):
+        for j in range(len(contours2)):
+            (x_val,_,_,_) = cv2.boundingRect(contours2[j])
+            if (num_array[i] == x_val):
+                (x,y,w,h) = cv2.boundingRect(contours2[j])
+                dimensions = [x,y,w,h]                
+                returnlist.append(dimensions)
+    return returnlist
+
 def writeImages(listofImages,String,path):
     for i in range(len(listofImages)):
         s,name = tryImWrite(String[i],listofImages[i],path)
         Createxml.write_xml(path,s,name,[String[i]],[(0,0)],[(10,10)],trypath(os.path.dirname(path) + "\\xml"))
-
-
-
-
-def writeImages2(listofImages,String,path):
-    for i in range(len(listofImages)):
-        if String[i].isupper():
-            s = String[i] + "_up"
-            tryImWrite(String[i],listofImages[i],trypath(path + "\\" + s))
-        else:
-            tryImWrite(String[i],listofImages[i],trypath(path + "\\" + String[i]))
 
 def trypath(path):
     if not os.path.exists(path):
         os.makedirs(path)
     return path    
        
+def getavailname(path,string):
+    i = 0
+    while (os.path.isfile(os.path.join(path,string + '.' + str(i)))):
+        i += 1
+    return string + '.' + str(i)
 
 #Temporary code
+
+##def writeImages2(listofImages,String,path):
+##    for i in range(len(listofImages)):
+##        if String[i].isupper():
+##            s = String[i] + "_up"
+##            tryImWrite(String[i],listofImages[i],trypath(path + "\\" + s))
+##        else:
+##            tryImWrite(String[i],listofImages[i],trypath(path + "\\" + String[i]))
+##
 
 #cv2.drawContours(returnImage,contours,-1,(155,155,255),1)
 #cv2.namedWindow('Display',cv2.WINDOW_NORMAL)
