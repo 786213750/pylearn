@@ -92,8 +92,9 @@ def trypath(path):
        
 def getavailname(path,string):
     i = 0
-    while (os.path.isfile(os.path.join(path,string + '.' + str(i)))):
+    while (os.path.isfile(os.path.join(path,string + '.' + str(i) + '.png'))):
         i += 1
+        
     return string + '.' + str(i)
 
 #Temporary code

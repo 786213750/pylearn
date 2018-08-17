@@ -13,7 +13,7 @@ path = pathname + "/images"
 
 #Main
 
-for _ in range(1):
+for _ in range(100):
     #Create Captcha and write to Images Folder
     contours2 = []
     num_array = []
@@ -22,10 +22,7 @@ for _ in range(1):
     String = CaptchaFunctions.getavailname(path,String)
     StringName = (String + '.png')
     text, _ = c.write(os.path.join(path,StringName))
-    print(path)
-    
 
-    
     contours,hierarchy,returnImage = CaptchaFunctions.ImageCreate(StringName,path)
     CaptchaFunctions.elimContours(contours,contours2,hierarchy)
     
@@ -34,16 +31,15 @@ for _ in range(1):
 ##        os.remove(os.path.join(path,StringName))
 ##        
 ##        continue
-    try:
-        for i in range(len(contours2)):
-            (_,_,w,_) = cv2.boundingRect(contours2[i])
-            if (w > 40):
-                os.remove(os.path.join(path,StringName))
-                print('lol')
-                raise CaptchaFunctions.Continue1
-    except CaptchaFunctions.Continue1:
-        print(String)
-        continue
+##    try:
+##        for i in range(len(contours2)):
+##            (_,_,w,_) = cv2.boundingRect(contours2[i])
+##            if (w > 40):
+##                os.remove(os.path.join(path,StringName))
+##                print('lol')
+##                raise CaptchaFunctions.Continue1
+##    except CaptchaFunctions.Continue1:
+##        continue
         
     
     coords = CaptchaFunctions.returncoords(contours2,num_array,String,returnImage,path)
