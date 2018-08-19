@@ -18,7 +18,7 @@ for _ in range(1):
     num_array = []
     String = CaptchaFunctions.randomString(CharInCaptcha) 
     StringName = (String + '.png')
-    c = Claptcha(String, "FreeMono.ttf",noise = 0.0)
+    c = Claptcha(String, "FreeMono.ttf",noise = 0.6)
     text, _ = c.write(os.path.join(path,StringName))
     
     contours,hierarchy,returnImage = CaptchaFunctions.ImageCreate(StringName,path)
@@ -42,4 +42,6 @@ for _ in range(1):
     CaptchaFunctions.writeImages(CaptchaFunctions.cropContours(contours2,num_array,String,returnImage,path),String,path)
     #CaptchaFunctions.writeImages2(CaptchaFunctions.cropContours(contours2,num_array,String,returnImage,path),String,path)
     os.remove(os.path.join(path,StringName))
+
+    
     

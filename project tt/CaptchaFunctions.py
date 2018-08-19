@@ -30,7 +30,7 @@ def tryImWrite(String,img,path):
 #Create Threshold Image, process contours, create ReturnImage
 def ImageCreate(StringName,path):
     
-    thresh,img = cv2.threshold(cv2.imread(os.path.join(path,StringName),cv2.IMREAD_GRAYSCALE),250,300,cv2.THRESH_BINARY)
+    thresh,img = cv2.threshold(cv2.imread(os.path.join(path,StringName),cv2.IMREAD_GRAYSCALE),220,300,cv2.THRESH_BINARY+cv2.THRESH_OTSU )
     
     im2,contours,hierarchy = cv2.findContours(img,cv2.RETR_CCOMP,cv2.CHAIN_APPROX_SIMPLE)
 

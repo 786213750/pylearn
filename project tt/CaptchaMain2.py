@@ -13,12 +13,12 @@ path = pathname + "/images"
 
 #Main
 
-for _ in range(1000):
+for _ in range(1):
     #Create Captcha and write to Images Folder
     contours2 = []
     num_array = []
     String = CaptchaFunctions.randomString(CharInCaptcha)
-    c = Claptcha(String, "FreeMono.ttf",noise = 0.0)
+    c = Claptcha(String, "FreeMono.ttf",noise = 0.6)
     String = CaptchaFunctions.getavailname(path,String)
     StringName = (String + '.png')
     text, _ = c.write(os.path.join(path,StringName))
@@ -29,7 +29,6 @@ for _ in range(1000):
     #Exception checker
     if (CharInCaptcha < len(contours2)):
         os.remove(os.path.join(path,StringName))
-        
         continue
     try:
         for i in range(len(contours2)):
@@ -46,6 +45,5 @@ for _ in range(1000):
     for i in range(len(coords)):
         tl = (coords[i][0],coords[i][1])
         br = (coords[i][0]+coords[i][2],coords[i][1]+coords[i][3])
-        Createxml.write_xml(path,os.path.join(path,String + '.png'),String + '.' + str(i) + '.png',[String[i]],[tl],[br],CaptchaFunctions.trypath(os.path.dirname(path) + "//xml"))
-        
+        Createxml.write_xml(path,os.path.join(path,String + '.png'),String + '.' + str(i) + '.png',[String[i]],[tl],[br],CaptchaFunctions.trypath(os.path.dirname(path) + "//xml"))   
          
