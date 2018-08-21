@@ -10,6 +10,10 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import random
 
+firstrgb1 = 0
+secondrgb1 = 0
+thirdrgb1 = 0
+contrast = 0
 
 class ClaptchaError(Exception):
     """Exception class for Claptcha errors."""
@@ -105,9 +109,15 @@ class Claptcha(object):
         margin_x = round(self.margin_x * w / self.w)
         margin_y = round(self.margin_y * h / self.h)
         
+        global firstrgb1 
         firstrgb1 = random.randint(0,255)
+        global secondrgb1
         secondrgb1 =random.randint(0,255)
+        global thirdrgb1
         thirdrgb1 = random.randint(0,255)        
+        
+        global contrast
+        contrast = ((firstrgb1*299)+(secondrgb1*587)+(thirdrgb1*114))/1000
         
         image = Image.new('RGB',
                           (w + 2*margin_x, h + 2*margin_y),
@@ -276,13 +286,26 @@ class Claptcha(object):
 
         for c in text:
             # Write letter
-            firstrgb2 = random.randint(0,255)
-            secondrgb2 =random.randint(0,255)
-            thirdrgb2 = random.randint(0,255)
+            firstrgb2 = random.randint(0,100)
+            secondrgb2 =random.randint(0,100)
+            thirdrgb2 = random.randint(0,100)
+            
             c_size = self.font.getsize(c)
             c_image = Image.new('RGBA', c_size, (0, 0, 255, 0))
             c_draw = ImageDraw.Draw(c_image)
-            c_draw.text((0, 0), c, font=self.font, fill=(firstrgb2, secondrgb2, thirdrgb2, 255))
+            
+            firstnum = 255-firstrgb1 - firstrgb2
+            secondnum = 255- secondrgb1 - secondrgb2
+            thirdnum = 255-thirdrgb1 - thirdrgb2
+            
+            if(firstnum<0):
+                firstnum = firstrgb2
+            if(secondnum<0):
+                secondnum = secondrgb2
+            if(thirdnum<0):
+                thirdnum = thirdrgb2
+            
+            c_draw.text((0, 0), c, font=self.font, fill=(firstnum,secondnum,thirdnum, 255))
 
             # Transform
             c_image = self._rndLetterTransform(c_image)
